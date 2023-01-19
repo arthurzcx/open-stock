@@ -80,6 +80,6 @@ optional arguments:
 
 ### Noitce
 
-- All A-shares data from open API.
+- All A-shares data from open web APIs.
 
 
