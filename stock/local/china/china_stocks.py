@@ -26,7 +26,7 @@ class ChinaStocks():
     """
 
     def __init__(self):
-        self.root_path = os.path.join(os.getcwd(), 'data','local', 'china')
+        self.root_path = os.path.join(os.getcwd(), 'stock', 'local', 'china')
         self.stocks_shanghai = self.__stocks("shanghai")
         self.stocks_shenzhen = self.__stocks("shenzhen")
         self.stocks_kechuang = self.__stocks("kechuang")

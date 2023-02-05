@@ -1,14 +1,15 @@
 # !/usr/bin/python
 # -*- encoding:utf-8 -*-
 
-'''
-Main entry.
+"""
+Main Entry.
 
-Created on 2022年10月22日
+Created on 2023-02-05
 
 @author: Arthur
-@copyright: Jancy Co.,Ltd.
-'''
+@copyright: Jancy Co.,Ltd. 2023-2033
+
+"""
 
 import stock.common.message as Message
 import stock.common.email as Email
@@ -43,14 +44,20 @@ from cmd import Cmd
 
 class MainCmd(Cmd):
     '''
-    主命令入口类
+    Main entry class.
     
     Attributes:
-        prompt 输入命令的提示符，位于行的头部
-        udu 更新数据类UtilsUpdateData的对象
-        cs A股类ChinaStocks的对象
-        trade 股票买卖类Trade的对象
-        favorite 关注股票类Favorite的对象
+    ----------
+        prompt: string. 
+            Command prompt ->.
+        udu: 
+            UtilsUpdateObject data class object.
+        cs: 
+            Chinese stock (A-share) class object (ChinaStocks).
+        trade: 
+            Trade class object.
+        favorite: 
+            Favorite class object for user favorite stocks.
     '''
 
     def __init__(self):
@@ -63,19 +70,26 @@ class MainCmd(Cmd):
 
     def check_args(self, args, input_list):
         """ 
-        检查并解析输入命令行参数
+        Check and parse command arguments that user inputs.
         
-        Args:
-        @args: 输入的命令行参数，以空格隔开，默认输入字符串 
-        @input_list: 多个参数的名称形成的列表，以该列表中的字段为key，生成map类型返回值
+        Parameters:
+        -----------
+        args: string
+            The command arguments that user input, seperated by space, and the default format is string. 
+        input_list: List
+            A list for name of input arguments, which element as the key of  return Map.
         
-        @return: 
-        map 类型的参数对象      
+        Returns:
+        ---------- 
+        A map with keys from "input_list" and values from "args".     
         
-        举例：
-        args:  sz600001  3
-        input_list:  ["stock_code", "years"]
-        返回值为{"stock_code": sz600001, "years":3}  
+        For example:
+        ----------
+        args:  
+            sz600001  3
+        input_list:  
+            ["stock_code", "years"]
+        Return value is {"stock_code": sz600001, "years":3}.  
         """
         args = args.strip().split()
         if len(args) != len(input_list):
@@ -90,10 +104,18 @@ class MainCmd(Cmd):
             return ret_args
 
     def do_draw_one_stock_today(self, st_code_or_name):
-        """ 
-        Draw today data of one stock.        
-        Arguments:
-            args: an exact stock code or name, fo example: sh600004
+        """
+        Draw today's data of a stock.
+        
+        Parameters:
+        ---------------
+        st_code_or_name: string
+            The code or name of a stock.
+        
+        Returns:
+        --------------
+        NoneType.
+        
         """
         try:
             p = Process(target=draw_utils.draw_one_stock_today,
@@ -104,10 +126,17 @@ class MainCmd(Cmd):
             return
 
     def do_draw_one_stock_history(self, st_code_or_name):
-        """ 
-        draw history data of one stock.
-        Arguments:
-            args: an exact stock code or name, for example: sh600004  
+        """
+        Draw history data of one stock.
+        
+        Parameters:
+        ---------------
+        st_code_or_name: string
+            The code or name of one stock.
+        
+        Returns:
+        --------------
+        NoneType.
         """
         try:
             p = Process(target=draw_utils.draw_one_stock_history,
@@ -117,10 +146,17 @@ class MainCmd(Cmd):
             Message.print_warning(e)
 
     def do_draw_candle(self, st_code_or_name):
-        """ 
-        draw history data candle.
-        Arguments:
-            args: an exact stock code or name, for example: sh600004  
+        """
+        Draw history data candle figure of one stock.
+        
+        Parameters:
+        ---------------
+        st_code_or_name: string
+            The code or name of one stock.
+        
+        Returns:
+        --------------
+        NoneType.
         """
         try:
             p = Process(target=draw_utils.draw_candle,
@@ -130,12 +166,19 @@ class MainCmd(Cmd):
             Message.print_warning(e)        
 
     def do_update_history(self, years):
-        """ 
-        Update history data of all stocks, just run one time when you need histroy data.
-        The process will cost serval minutes, because of the large data.
-        See the data files in directory: data/history
-        Arguments:
-            years: years of histroy data, for example: update_histroy  3 
+        """
+        Update history data of all stocks, and run one time when you need history data.
+        The function will call a process, and this will cost several minutes, depends on the quantity of data.
+        The data will be stored in directory: data/history.
+        
+        Parameters:
+        ---------------
+        years: int
+            Years of history data.
+        
+        Returns:
+        --------------
+        NoneType.
         """
         try:
             uud = UtilsUpdateData()
@@ -145,10 +188,20 @@ class MainCmd(Cmd):
             Message.print_warning(e)
 
     def do_find_a_stock(self, st_code_or_name):
-        """         
-        Find the exact code and name of your input incomplete code or name.        
-        For example: if you type "004",  the function will search "004" in all stocks' code and name. Then print them.
         """
+        Find the exact code and name of your input incomplete code or name.        
+        For example: if you type "004",  the function will search "004" in all stocks' code and name.
+        Then print a list of them.
+        
+        Parameters:
+        ---------------
+        st_code_or_name: string
+            The incomplete code or name of one stock.
+        
+        Returns:
+        --------------
+        NoneType.
+        """        
         try:
             p = Process(target=self.cs.find_a_stock, args=(st_code_or_name,))
             p.start()
@@ -156,32 +209,50 @@ class MainCmd(Cmd):
         except Exception as e:
             Message.print_warning(e)
 
-    def do_buy(self, line):
-        """ Buy a stock.
-        Args:
-            stock_code_or_name:  the code or name of the stock bought.
-            quantity: the numer of this trade.
-            price: the price of the stock bought.         
+    def do_buy(self, input_args):
+        """
+        Buy a stock.
+        
+        Parameters:
+        ---------------
+        input_args: string
+            The arguments that contains "st_code_or_name", "quantity" and "price".
+            "st_code_or_name" means the code or name of the stock that you want to buy.
+            "quantity" means the quantity of stock that you want to buy.
+            "price" means the price of stock that you want to buy.
+            
+        Returns:
+        --------------
+        NoneType.
         """
         try:
             args = self.check_args(
-                line, ['st_code_or_name', 'quantity', 'price'])
+                input_args, ['st_code_or_name', 'quantity', 'price'])
             stock = self.cs.get_st_by_info(st_code_or_name=args["st_code_or_name"])
             self.trade.buy(stock, quantity=args["quantity"], price_value=args["price"])
             Message.print_info("The trade has done!")
         except Exception as e:
             Message.print_warning(e)
 
-    def do_sell(self, line):
-        """ Sell a stock.
-        Args:
-            stock_code_or_name:  the code or name of the stock bought.
-            quantity: the numer of this trade.
-            price: the price of the stock bought.         
+    def do_sell(self, input_args):
+        """ 
+        Sell a stock.
+        
+        Parameters:
+        ---------------
+        input_args: string
+            The arguments that contains "st_code_or_name", "quantity" and "price".
+            "st_code_or_name" means the code or name of the stock that you want to sell.
+            "quantity" means the quantity of stock that you want to sell.
+            "price" means the price of stock that you want to sell.  
+                        
+        Returns:
+        --------------
+        NoneType.    
         """
         try:
             args = self.check_args(
-                line, ['st_code_or_name', 'quantity', 'price'])
+                input_args, ['st_code_or_name', 'quantity', 'price'])
             stock = self.cs.get_st_by_info(st_code_or_name=args['st_code_or_name'])
             self.trade.sell(stock, quantity=args["quantity"], price_value=args["price"])
             Message.print_info("The trade has done!")
@@ -189,7 +260,17 @@ class MainCmd(Cmd):
             Message.print_warning(e)
 
     def do_my_positions(self, args):
-        """ List all my positions.
+        """
+        List all my positions.
+        
+        Parameters:
+        ---------------
+        args: string
+            Should be empty.
+        
+        Returns:
+        --------------
+        NoneType.
         """
         try:
             self.trade.my_positions()
@@ -197,62 +278,148 @@ class MainCmd(Cmd):
             Message.print_warning(e)
 
     def do_add_favorite(self, args):
-        """ Add a stock to favorite.
+        """
+        Add one stock to your favorites.
+        
+        Parameters:
+        ---------------
+        args: string
+            The code or name of the stock that you want to add to your favorites.
+        
+        Returns:
+        --------------
+        NoneType.
         """
         stock = self.cs.find_a_stock(args)
         if stock is not None and len(stock) > 0:
             self.favorite.add_favorite(stock[0])
     
     def do_remove_favorite(self, args):
-        """ Remove a stock from favorites.
+        """
+        Remove one stock from your favorites.
+        
+        Parameters:
+        ---------------
+        args: string
+            The code or name of the stock that you want to remove from you favorites.
+        
+        Returns:
+        --------------
+        NoneType.
         """
         stock = self.cs.find_a_stock(args)
         if stock is not None and len(stock) > 0:
             self.favorite.remove_favorite(stock[0])
     
-    def do_test_read_broad_cap_index_latest(self,args):
-        '''
-        测试读取最新的大盘指数数据文件
-        '''
+    def do_read_broad_cap_index_latest(self,args):
+        """
+        Read latest broad cap index data.
+        
+        Parameters:
+        ---------------
+        args: string
+            Should be empty.
+        
+        Returns:
+        --------------
+        NoneType.
+        """
         print(data_reader.DataReader().read_broad_cap_index_latest())
         
-    def do_test_all_section_list(self,args):
-        '''
-        测试读取所有板块的名称列表
-        '''
+    def do_all_section_list(self,args):
+        """
+        Test for all section list, and print them.
+        
+        Parameters:
+        ---------------
+        args: string
+            Should be empty.
+        
+        Returns:
+        --------------
+        NoneType.
+        """
         test_china = TestChina()
         test_china.test_read_all_section_list()
     
-    def do_test_read_one_section(self, args):
-        '''
-        测试读取某一个板块的数据
-        '''
+    def do_read_one_section(self, args):
+        """
+        Test to read data of a section.
+        
+        Parameters:
+        ---------------
+        args: string
+            Should be empty.
+        
+        Returns:
+        --------------
+        NoneType.
+        """
         test_china = TestChina()
         test_china.test_read_on_section()
     
-    def do_test_create_market_value_data_from_history(self,args):
-        '''
-        测试从当前市值文件和历史数据文件虚假的制造出用于测试的市值文件
-        '''
+    def do_create_market_value_data_from_history(self,args):
+        """
+        Create market value data form history data.
+        Please notice: the created data maybe not inaccurate.
+        
+        Parameters:
+        ---------------
+        args: string
+            Should be empty.
+        
+        Returns:
+        --------------
+        NoneType.
+        """
         test_china = TestChina()
         test_china.create_market_value_data_from_history()
     
-    def do_test_read_sector_day(self, args):
+    def do_read_sector_day(self, args):
         """
-        读取某日、某行业板块的总市值
+        Test reading data of a certain section on a certain day.
+        
+        Parameters:
+        ---------------
+        args: string
+            Should be empty.
+        
+        Returns:
+        --------------
+        NoneType.
         """
         test_read_sector_day(sector="高铁", dtime=datetime.datetime.strptime("2022-09-16", "%Y-%m-%d"))
     
-    def do_test_read_sector_continous_days(self, args):
-        '''
-        测试某行业板块连续多日的市值数据，从当前日期向前推
-        '''
+    def do_read_sector_continous_days(self, args):
+        """
+        Test reading market value data of a sector for several continous days, 
+        and the date pushed forward from current date.
+        
+        Parameters:
+        ---------------
+        args: string
+            Should be empty.
+        
+        Returns:
+        --------------
+        NoneType.
+        """
         test_read_sector_continous_days(sector="高铁", days=30)
     
-    def do_test_draw_sector_continous_days(self, args):
-        '''
-        测试绘制某行业板块连续多日的市值数据，从当前日期往前推
-        '''         
+    def do_draw_sector_continous_days(self, args):
+        """
+        Test drawing market value data of a certain sector for several continous days,
+        and the date pushed forward from the current date.
+        
+        Parameters:
+        ---------------
+        args: string
+            Should be empty.
+        
+        Returns:
+        --------------
+        NoneType.
+        """         
         sector = "高铁"
         days = 30  
         if len(args) > 0:
@@ -263,10 +430,19 @@ class MainCmd(Cmd):
         df_data = UtilsDataSector().read_sector_continous_days(sector=sector, days=days)
         dfplot.DfPlot().draw_common_data("date", "market_value", df_data, "%s板块市值"%(sector))
     
-    def do_test_read_sector_continous_days_ma(self, args):
-        '''
-        测试绘制某个板块的移动平均线，7日MA
-        '''
+    def do_read_sector_continous_days_ma(self, args):
+        """
+        Test reading the moving average of a certain sector data.
+        
+        Parameters:
+        ---------------
+        args: string
+            Should be empty.
+        
+        Returns:
+        --------------
+        NoneType.
+        """
         sector = "高铁"
         days = 30  
         ma_days = 7 
@@ -278,14 +454,21 @@ class MainCmd(Cmd):
         df_data = UtilsDataSector().read_sector_continous_days_ma(sector=sector, days=days,ma_days=ma_days)
         dfplot.DfPlot().draw_common_data("date", "market_value", df_data, "%s板块市值%s日移动均线"%(sector,str(days)))
     
-    def do_test_calc_minus_yesterday(self, args):
-        '''
-        测试计算求连续多日  当日与前一天的数据差
-        这里使用板块数据进行测试
+    def do_calc_minus_yesterday(self, args):
+        """
+        Test and calculate the data difference between the current day and the previous day 
+        for several consecutive days.
+        Here, we use sector data for testing
         
-        Arguments:
-            args 板块名称
-        '''
+        Parameters:
+        ---------------
+        args: string
+            Should be a name of a certain sector in sector list.
+        
+        Returns:
+        --------------
+        NoneType.
+        """
         sector = "云办公"
         days = 30  
         ma_days = 7 
@@ -299,12 +482,18 @@ class MainCmd(Cmd):
         print(data_minus)
     
     def do_test_sector_analyzer(self,args):
-        '''
-        测试对板块数据的连续涨跌进行分析
+        """
+        Test analyzing the continuous rise and fall of sectors data.
         
-        Arguments:
-            args 板块名称
-        '''
+        Parameters:
+        ---------------
+        args: string
+            Must be a sector name from sectors list.
+        
+        Returns:
+        --------------
+        NoneType.
+        """
         sector = "半导体元件"
         if len(args) > 0:
             ret_args = self.check_args(args, ['sector'])
@@ -322,19 +511,37 @@ class MainCmd(Cmd):
             print("%s 板块连续上涨，上涨天数 %d, 累计上涨 %.2f%%\n"%(sector,result.increase_continous_days,result.increase_continous_ratio*100.0))
     
     def do_test_all_sectors(self, args):
-        '''
-        分析所有的板块数据，找出连续增长的股票
-        '''
+        """
+        Analyze all sector data to find stocks with continuous growth.
+        
+        Parameters:
+        ---------------
+        args: string
+            Should be empty.
+        
+        Returns:
+        --------------
+        NoneType.
+        """
         analyzer = AnalyzerSectorAll(config=AnalyzerSectorConfig())
         analyzer.run()
         html = Html.assembel_html(analyzer.result_to_html())
         
         Email.send_default_email(content_html=html, subject="板块涨跌分析")
     
-    def do_test_broad_cap_index_analyze(self,args):
-        '''
-        大盘指数分析，以邮件方式通知
-        '''
+    def do_broad_cap_index_analyze(self,args):
+        """
+        Analysis of market index and notification by email.
+        
+        Parameters:
+        ---------------
+        args: string
+            Should be empty.
+        
+        Returns:
+        --------------
+        NoneType.
+        """
         analyzer = AnalyzerBroadCapIndex(config=AnalyzerConfig())
         analyzer.run()
         html = Html.assembel_html(analyzer.result_to_html())
@@ -342,9 +549,18 @@ class MainCmd(Cmd):
         Email.send_default_email(content_html=html, subject="大盘指数")
     
     def do_analyzer_manager(self, args):
-        '''
-        运行分析器管理器
-        '''
+        """
+        Run analyzer manager.
+        
+        Parameters:
+        ---------------
+        args: string.
+            Should be empty.
+        
+        Returns:
+        --------------
+        NoneType.
+        """
         am = AnalyzerManager(config=AnalyzerManagerConfig())
         am.run()
         html_body = am.result_to_html()
@@ -354,12 +570,15 @@ class MainCmd(Cmd):
     def do_exit(self, args):
         """ 
         Exit the main process, just type in: exit. 
-        The process will close serval child threads or childs process, so you should wait serval minutes.
+        The process will close several child threads or child processes, so maybe you should wait several minutes.
         """
         self.udu.exit_update()
         exit(0)
 
 def print_app_info():
+    """
+    Print information of this application.
+    """
     from stock.common.appinfo import AppInfo
     app_info = AppInfo()
     Message.print_msg_list(msg_list=app_info.info_list, color=Message.Color.yellow, style=Message.Style.highlight,
@@ -397,51 +616,58 @@ if __name__ == "__main__":
         dfplot.test_draw_one_stock_history()
 
     else:
-        print("Main cmd loop starts ......")
+        print("Main command loop starts ......")
         mc = MainCmd()
         
         ##################################################################
-        # 配置
-        enable_update_realtime = False # 是否使能实时数据更新
-        enable_update_market_value = True # 是否使能更新每日市值数据
-        enable_update_broad_cap_index = True # 是否使能更新每日大盘指数数据
+        """
+            Config parameters
+        """
+        enable_update_realtime = False # Enable real-time data updating or not
+        enable_update_market_value = True # Enable daily market value data updating or not
+        enable_update_broad_cap_index = True # Enable daily broad index updating or not
         
         
         ##################################################################
         
-        ## 每日实时数据更新线程，按照设定秒数更新一次所有股票实时数据
+        """
+            The daily real-time data updating thread updates the real-time data of all stocks 
+            once according to the set number of seconds
+        """
         if enable_update_realtime is True:
             Message.print_info(
-                "更新当日实时数据的线程已经启动...")
+                "The thread for updating the real-time data of the current day has started...")
             seconds_update_today = 300 # 更新实时数据的间隔时间，单位秒
             tud = threading.Thread(target=mc.udu.update_today, args=(seconds_update_today,))
             tud.start()
         else:
             Message.print_warning(
-                "已禁止更新每日实时数据!")
+                "Updating of daily real-time data has been disabled! Please config enable_update_realtime = True to enable.")
         
-        ## 每日更新市值数据，这是进行行业板块分析的基础数据，必须做
+        """
+            Update market value data every day, which is the basic data for sector analysis.
+        """
         if enable_update_market_value is True:
             Message.print_info(
-                "更新市值的线程已经启动...")
+                "The thread to update the market value has started...")
             hour_trigger_update_market_vaule = 9 # 触发更新市值数据的时间，17表示下午5点
             t = threading.Thread(target=thread_update_market_value, args=(hour_trigger_update_market_vaule,))
             t.start()
         else:
             Message.print_warning(
-                "已禁止更新每日市值数据!")
+                "Update of daily market value data is disabled! Please config enable_update_market_value = True to enable.")
         
         ## 每日更新大盘指数数据，这是所有分析可能要依据的基础数据，必须做
         if enable_update_broad_cap_index  is True:
             Message.print_info(
-                "更新当日大盘指数数据的线程已经启动...")
+                "The thread for updating the market index data of the current day has started...")
             hour_trigger_update_broad_cap_index = 9 # 触发更新大盘指数数据的时间
             t = threading.Thread(target=thread_update_broad_cap_index, args=(hour_trigger_update_broad_cap_index,))
             t.start()
         else:
             Message.print_warning(
-                "已禁止更新每日大盘指数数据!")
+                "Update of daily market index data is disable! Please config enable_update_broad_cap_index = True to enable.")
         
         ##################################################################
         Message.print_info("Please type in 'help' to list all commands supported.")
-        mc.cmdloop(intro="Welcom to  stock simulator! Earning money!!!")
+        mc.cmdloop(intro="Welcome to  stock simulator! Earning money!!!")

@@ -243,7 +243,7 @@ def thread_update_market_value(trigger_hour=17):
     # weekday = UtilDateTime.weekday(UtilDateTime.now_beijing())
     dtime_beijing = UtilDateTime.now_beijing()
     if UtilDateTime.is_valid_trade_day(dtime_beijing) is False:
-        print_warning("非交易日，不更新市值数据!")
+        print_warning("Do not update market value data on non-trading days!")
         return
     
     while True:
@@ -260,7 +260,7 @@ def thread_update_broad_cap_index(trigger_hour=17):
     '''
     dtime_beijing = UtilDateTime.now_beijing()
     if UtilDateTime.is_valid_trade_day(dtime_beijing) is False:
-        print_warning("非交易日，不更新大盘指数数据!")
+        print_warning("Do not update the market index data on non-trading days!")
         return
     
     while True:
